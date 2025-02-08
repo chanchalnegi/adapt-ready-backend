@@ -15,12 +15,12 @@ export const login = (req: Request, res: Response): void => {
     return;
   }
 
-  const { username, password } = value;
+  const { email, password } = value;
 
   // Authenticate user
-  if (username === credentials.username && password === credentials.password) {
+  if (email === credentials.username && password === credentials.password) {
     // User authenticated, generate a JWT
-    const token = jwt.sign({ username }, jwtSecret, { expiresIn: "1h" });
+    const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1h" });
     res.status(200).json({ message: "Login successful", token });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
