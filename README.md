@@ -13,7 +13,7 @@ This project is a Node.js RESTful API built with Express and TypeScript, designe
 
 ## Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 18.17 or higher)
 - npm (version 6 or higher)
 
 ## Installation
@@ -21,8 +21,8 @@ This project is a Node.js RESTful API built with Express and TypeScript, designe
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/indian-food-api.git
-   cd indian-food-api
+   git clone https://github.com/chanchalnegi/adapt-ready-backend.git
+   cd adapt-ready-backend
    ```
 
 2. **Install dependencies:**
