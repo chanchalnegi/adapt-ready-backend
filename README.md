@@ -101,7 +101,6 @@ This project is a Node.js RESTful API built with Express and TypeScript, designe
 - **Dishes:**
   - GET /dishes: Retrieve all dishes with optional filtering, sorting, and pagination.
   - GET /dishes/:id: Retrieve a specific dish by ID.
-  - POST /dishes/find-by-ingredients: Retrieve by ingredients.
   - POST /dishes: Create a new dish.
   - PUT /dishes/:id: Update an existing dish by ID.
   - DELETE /dishes/:id: Delete a dish by ID.

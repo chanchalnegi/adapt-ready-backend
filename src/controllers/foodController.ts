@@ -9,6 +9,7 @@ export const getAllDishes = (req: Request, res: Response): void => {
     limit = "10",
     sortBy = "name",
     order = "asc",
+    ingredients,
     diet,
     flavor,
     state,
@@ -39,6 +40,25 @@ export const getAllDishes = (req: Request, res: Response): void => {
       (dish) => dish.state.toLowerCase() === (state as string).toLowerCase()
     );
   }
+  if (ingredients) {
+    const availableIngredients = (ingredients as string)
+      .split(",")
+      .map((ing) => ing.trim().toLowerCase());
+
+    dishes = dishes.filter((dish) => {
+      const dishIngredients = dish.ingredients
+        .toLowerCase()
+        .split(",")
+        .map((ing) => ing.trim());
+      return availableIngredients.every((ingredient) =>
+        dishIngredients.includes(ingredient)
+      );
+    });
+  }
+
+  // Calculate total number of pages
+  const totalDishes = dishes.length;
+  const totalPages = Math.ceil(totalDishes / pageSize);
 
   // Apply sorting
   dishes.sort((a, b) => {
@@ -63,7 +83,8 @@ export const getAllDishes = (req: Request, res: Response): void => {
   const response = {
     page: pageNumber,
     limit: pageSize,
-    total: dishes.length,
+    totalDishes,
+    totalPages,
     results: paginatedDishes,
   };
   res.status(200).json(response);
@@ -77,16 +98,6 @@ export const getDishById = (req: Request, res: Response): void => {
     return;
   }
   res.status(200).json(dish);
-};
-
-export const getDishesByIngredients = (req: Request, res: Response): void => {
-  const { ingredients } = req.body;
-  if (!Array.isArray(ingredients)) {
-    res.status(400).json({ message: "Invalid ingredients format" });
-    return;
-  }
-  const possibleDishes = FoodDatabase.findDishesByIngredients(ingredients);
-  res.status(200).json(possibleDishes);
 };
 
 export const createDish = (req: Request, res: Response) => {
