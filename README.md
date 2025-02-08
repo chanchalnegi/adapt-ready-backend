@@ -25,29 +25,47 @@ This project is a Node.js RESTful API built with Express and TypeScript, designe
    cd indian-food-api
    ```
 
-project-root/
-├── src/
-│ ├── controllers/
-│ │ ├── AuthController.ts
-│ │ └── DishController.ts
-│ ├── routes/
-│ │ ├── authRoutes.ts
-│ │ └── dishRoutes.ts
-│ ├── schemas/
-│ │ ├── dishSchema.ts
-│ │ ├── updateDishSchema.ts
-│ │ └── loginSchema.ts
-│ ├── models/
-│ │ ├── Food.ts
-│ │ └── User.ts
-│ ├── services/
-│ │ └── FoodDatabase.ts
-│ ├── middleware/
-│ │ └── authMiddleware.ts
-│ ├── config/
-│ │ └── index.ts
-│ ├── app.ts
-│ └── server.ts
-├── .env
-├── package.json
-└── tsconfig.json
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+
+- Create a .env file in the root directory
+- Add the following variables:
+
+  ```ini
+  USERNAME=yourUsername
+  PASSWORD=yourPassword
+  JWT_SECRET=yourJWTSecret
+  ```
+
+  .
+  ├── README.md
+  ├── package-lock.json
+  ├── package.json
+  ├── src
+  │   ├── config.ts
+  │   ├── controllers
+  │   │   ├── authController.ts
+  │   │   └── foodController.ts
+  │   ├── data
+  │   │   └── indian_food.json
+  │   ├── database
+  │   │   └── foodDatabase.ts
+  │   ├── index.ts
+  │   ├── middleware
+  │   │   └── authMiddleware.ts
+  │   ├── models
+  │   │   └── foodModel.ts
+  │   ├── routes
+  │   │   ├── authRoutes.ts
+  │   │   └── foodRoutes.ts
+  │   └── schemas
+  │   ├── dishSchema.ts
+  │   ├── loginSchema.ts
+  │   └── updateDishSchema.ts
+  ├── structure.txt
+  └── tsconfig.json
