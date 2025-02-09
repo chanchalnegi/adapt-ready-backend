@@ -3,16 +3,20 @@ import FoodDatabase from "../database/foodDatabase";
 import dishSchema from "../schemas/dishSchema";
 import updateDishSchema from "../schemas/updateDishSchema";
 
+/**
+ * Used to fetch all dishes based on the pagination sorting and filtering
+ * @param req
+ * @param res
+ */
 export const getAllDishes = (req: Request, res: Response): void => {
   const {
     page = "1",
     limit = "10",
-    sortBy = "name",
+    sort_by = "name",
     order = "asc",
     ingredients,
     diet,
     flavor,
-    state,
   } = req.query;
 
   // Convert query parameters to appropriate types
@@ -32,12 +36,7 @@ export const getAllDishes = (req: Request, res: Response): void => {
   if (flavor) {
     dishes = dishes.filter(
       (dish) =>
-        dish.flavor_profile.toLowerCase() === (flavor as string).toLowerCase()
-    );
-  }
-  if (state) {
-    dishes = dishes.filter(
-      (dish) => dish.state.toLowerCase() === (state as string).toLowerCase()
+        dish.flavor_profile?.toLowerCase() === (flavor as string).toLowerCase()
     );
   }
   if (ingredients) {
@@ -62,14 +61,22 @@ export const getAllDishes = (req: Request, res: Response): void => {
 
   // Apply sorting
   dishes.sort((a, b) => {
-    const fieldA = a[sortBy as keyof typeof a];
-    const fieldB = b[sortBy as keyof typeof b];
+    const fieldA = a[sort_by as keyof typeof a];
+    const fieldB = b[sort_by as keyof typeof b];
+
+    if (fieldA === undefined || fieldB === undefined) {
+      console.warn(`Warning: ${sort_by} field not found in some dishes.`);
+      return 0;
+    }
 
     if (typeof fieldA === "string" && typeof fieldB === "string") {
       return sortOrder * fieldA.localeCompare(fieldB);
     } else if (typeof fieldA === "number" && typeof fieldB === "number") {
       return sortOrder * (fieldA - fieldB);
     } else {
+      console.warn(
+        `Mismatched types for sorting: ${typeof fieldA} vs ${typeof fieldB}`
+      );
       return 0;
     }
   });
@@ -90,6 +97,12 @@ export const getAllDishes = (req: Request, res: Response): void => {
   res.status(200).json(response);
 };
 
+/**
+ * get dish by id
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getDishById = (req: Request, res: Response): void => {
   const { id } = req.params;
   const dish = FoodDatabase.findDishById(id);
@@ -100,6 +113,12 @@ export const getDishById = (req: Request, res: Response): void => {
   res.status(200).json(dish);
 };
 
+/**
+ * create a dish
+ * @param req
+ * @param res
+ * @returns
+ */
 export const createDish = (req: Request, res: Response) => {
   const { error } = dishSchema.validate(req.body, {
     abortEarly: false,
@@ -113,6 +132,12 @@ export const createDish = (req: Request, res: Response) => {
   res.status(201).json(newDish);
 };
 
+/**
+ * update a dish
+ * @param req
+ * @param res
+ * @returns
+ */
 export const updateDish = (req: Request, res: Response) => {
   const { error } = updateDishSchema.validate(
     { id: req.params.id, ...req.body },
@@ -124,17 +149,55 @@ export const updateDish = (req: Request, res: Response) => {
   }
   const updatedDish = FoodDatabase.updateDish(req.params.id, req.body);
   if (!updatedDish) {
-    res.status(404).json({ message: "Dish not found" });
+    // res.status(404).json({ message: "Dish not found" });
     return;
   }
   res.json(updatedDish);
 };
 
+/**
+ * delete a dish
+ * @param req
+ * @param res
+ * @returns
+ */
 export const deleteDish = (req: Request, res: Response) => {
   const deleted = FoodDatabase.deleteDish(req.params.id);
   if (!deleted) {
-    res.status(404).json({ message: "Dish not found" });
+    // res.status(404).json({ message: "Dish not found" });
     return;
   }
   res.json({ message: "Dish deleted successfully" });
+};
+
+/**
+ * search based on suggestion
+ * @param req
+ * @param res
+ */
+export const searchDishes = (req: Request, res: Response): void => {
+  const { query = "" } = req.query;
+
+  // Retrieve all dishes
+  let dishes = FoodDatabase.getAllDishes();
+
+  // Convert query to lowercase for case-insensitive search
+  const searchQuery = (query as string).toLowerCase();
+
+  // Apply filtering based on name, ingredients, or origin (state/region)
+  dishes = dishes.filter((dish) => {
+    const nameMatch = dish.name.toLowerCase().includes(searchQuery);
+    const ingredientsMatch = dish.ingredients
+      .toLowerCase()
+      .split(",")
+      .some((ing) => ing.trim().includes(searchQuery));
+    const originMatch =
+      dish.state?.toLowerCase().includes(searchQuery) ||
+      dish.region?.toLowerCase().includes(searchQuery);
+
+    return nameMatch || ingredientsMatch || originMatch;
+  });
+
+  // Prepare response
+  res.status(200).json(dishes);
 };
