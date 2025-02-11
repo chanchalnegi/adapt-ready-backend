@@ -149,7 +149,7 @@ export const updateDish = (req: Request, res: Response) => {
   }
   const updatedDish = FoodDatabase.updateDish(req.params.id, req.body);
   if (!updatedDish) {
-    // res.status(404).json({ message: "Dish not found" });
+    res.status(404).json({ message: "Dish not found" });
     return;
   }
   res.json(updatedDish);
@@ -164,7 +164,7 @@ export const updateDish = (req: Request, res: Response) => {
 export const deleteDish = (req: Request, res: Response) => {
   const deleted = FoodDatabase.deleteDish(req.params.id);
   if (!deleted) {
-    // res.status(404).json({ message: "Dish not found" });
+    res.status(404).json({ message: "Dish not found" });
     return;
   }
   res.json({ message: "Dish deleted successfully" });

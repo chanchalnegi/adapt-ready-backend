@@ -21,8 +21,23 @@ export const login = (req: Request, res: Response): void => {
   if (email === credentials.username && password === credentials.password) {
     // User authenticated, generate a JWT
     const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1h" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000, // 1 hour
+    });
     res.status(200).json({ message: "Login successful", token });
   } else {
     res.status(401).json({ message: "Invalid credentials" });
   }
+};
+
+export const logout = (req: Request, res: Response): void => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };

@@ -12,11 +12,9 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies.token;
 
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.split(" ")[1];
-
+  if (token) {
     try {
       const decoded = jwt.verify(token, jwtSecret);
       req.user = decoded;
